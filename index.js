@@ -1,12 +1,15 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
-const Anthropic = require('@anthropic-ai/sdk');
+const OpenAI = require('openai');
 
 const app = express();
 app.use(express.json());
 
-const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const claude = new OpenAI({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  baseURL: 'https://api.gptsapi.net/v1',
+});
 
 // Multi-turn conversation history per chat_id (in-memory)
 const conversations = new Map();
@@ -53,13 +56,13 @@ async function askClaude(chatId, userText) {
   const history = conversations.get(chatId);
   history.push({ role: 'user', content: userText });
 
-  const response = await claude.messages.create({
-    model: 'claude-sonnet-4-20250514',
+  const response = await claude.chat.completions.create({
+    model: 'claude-sonnet-4-6',
     max_tokens: 4096,
     messages: history,
   });
 
-  const reply = response.content.find((b) => b.type === 'text')?.text ?? '';
+  const reply = response.choices[0]?.message?.content ?? '';
   history.push({ role: 'assistant', content: reply });
 
   // Keep history bounded to last 40 messages (20 turns) to manage tokens

@@ -8,9 +8,9 @@
     "dev": "node --watch index.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
     "axios": "^1.7.0",
     "dotenv": "^16.4.0",
-    "express": "^4.19.0"
+    "express": "^4.19.0",
+    "openai": "^6.33.0"
   }
 }
